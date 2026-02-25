@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Operational Admin - HCLSDB</title>
+    {% block extra_head %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/hlogo2.png' %}" type="image/png">
+</head>
+<body>
+
+<table border="1" width="100%" height="600px">
+    <tr>
+
+        <!-- LEFT NAV -->
+        <td width="20%" valign="top" class="bg-dark" style="padding-left:20px;">
+
+            <h2 class="text-white">HCLS Operational Admin</h2>
+            <hr>
+
+            <p><a href="{% url 'OAdashboard' %}" style="color: white;">Dashboard</a></p>
+            <p><a href="{% url 'OAprofile' %}" style="color: white;">Profile</a></p>
+
+           <div class="d-grid gap-5">
+
+    <!-- Doctor -->
+    <div class="dropdown w-100">
+        <button class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown" style="margin-bottom: 10px;">
+            Doctor
+        </button>
+
+        <ul class="dropdown-menu w-100 shadow">
+            <li>
+                <a class="dropdown-item" href="{% url 'doctoradd' %}">
+                    Add Doctor
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{% url 'doctormanage' %}">
+                    Manage Doctor
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Helper -->
+    <div class="dropdown w-100">
+        <button class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown" style="margin-bottom: 10px;">
+            Helper
+        </button>
+
+        <ul class="dropdown-menu w-100 shadow">
+            <li>
+                <a class="dropdown-item" href="{% url 'helperadd' %}">
+                    Add Helper
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{% url 'helpermanage' %}">
+                    Manage Helper
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Receptionist -->
+    <div class="dropdown w-100">
+        <button class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown" style="margin-bottom: 10px;">
+            Receptionist
+        </button>
+
+        <ul class="dropdown-menu w-100 shadow">
+            <li>
+                <a class="dropdown-item" href="{% url 'receptionistadd' %}">
+                    Add Receptionist
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{% url 'receptionistmanage' %}">
+                    Manage Receptionist
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Pharmacy -->
+    <div class="dropdown w-100">
+        <button class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown" style="margin-bottom: 10px;">
+            Pharmacist
+        </button>
+
+        <ul class="dropdown-menu w-100 shadow">
+            <li>
+                <a class="dropdown-item" href="#">
+                    Add Pharmacist
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">
+                    Manage Pharmacist
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Diagonist -->
+    <div class="dropdown w-100">
+        <button class="btn btn-primary dropdown-toggle w-100"
+                data-bs-toggle="dropdown" style="margin-bottom: 10px;">
+            Diagonist Lab
+        </button>
+
+        <ul class="dropdown-menu w-100 shadow">
+            <li>
+                <a class="dropdown-item" href="#">
+                    Add Receptionist
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">
+                    Add Lab Incharge
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+        </td>
+
+        <!-- RIGHT CONTENT -->
+        <td width="80%" valign="top">
+
+            <!-- HEADER -->
+            <header class="py-3 border-bottom">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'home' %}" class="me-3">
+                            <img src="{% static 'images/hospitallogo.png' %}" 
+                                 alt="Logo" width="72" height="72">
+                        </a>
+
+                        <div>
+                            <div class="small text-muted">Welcome back</div>
+                            <div class="h5 mb-0">
+                                Hi,
+                                {% if admin_name %}
+                                    {{ admin_name }}
+                                {% elif request.user.is_authenticated %}
+                                    {{ request.user.get_full_name|default:request.user.username }}
+                                {% else %}
+                                    Guest
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <div id="headerTime" class="fw-semibold"></div>
+                        <div class="small text-muted">Local time</div>
+
+                        <form method="post" action="#">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger mt-2">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </header>
+
+            <!-- PAGE CONTENT -->
+            <div style="padding:20px;">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="bg-dark text-white py-3">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                    <div class="small">
+                        &copy; {{ year|default:2026 }} HCLSDB App. All rights reserved.
+                    </div>
+
+                    <div class="small">
+                        <a href="#" class="text-white text-decoration-none me-3">About</a>
+                        <a href="#" class="text-white text-decoration-none me-3">Privacy</a>
+                        <a href="#" class="text-white text-decoration-none">Contact</a>
+                    </div>
+
+                    <div>
+                        <a href="#"><img src="{% static 'images/facebook.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/twitter.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/instagram.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/linkedin.png' %}" width="22" height="22"></a>
+                    </div>
+
+                </div>
+            </footer>
+
+        </td>
+    </tr>
+</table>
+
+<script>
+(function(){
+    function pad(n){ return n < 10 ? '0' + n : n; }
+    function update(){
+        const el = document.getElementById('headerTime');
+        if(!el) return;
+        const d = new Date();
+        let h = d.getHours();
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        el.textContent = pad(h) + ':' + 
+                         pad(d.getMinutes()) + ':' + 
+                         pad(d.getSeconds()) + ' ' + ampm;
+    }
+    update();
+    setInterval(update, 1000);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

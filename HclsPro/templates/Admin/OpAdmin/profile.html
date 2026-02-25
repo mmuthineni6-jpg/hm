@@ -1,0 +1,174 @@
+{% extends 'Admin/OpAdmin/oadminbase.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+	<div class="row g-4">
+		<div class="col-lg-4">
+			<div class="card text-center">
+				<div class="card-body">
+					<div class="mb-3">
+						<img id="avatarPreview" src="{% if user and user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/hlogo2.png' %}{% endif %}" alt="Avatar" class="rounded-circle" width="140" height="140">
+					</div>
+					<h5 class="card-title mb-0">{{ user.get_full_name|default:'Operational Admin' }}</h5>
+					<div class="small text-muted mb-2">{{ user.email|default:'operational@hclsdb.com' }}</div>
+					<div class="mb-3"><span class="badge bg-info">Operational Admin</span></div>
+
+					<div class="d-grid gap-2">
+						<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+						<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h6 class="card-title">Summary</h6>
+					<ul class="list-unstyled mb-0">
+						<li class="d-flex justify-content-between"><span>Appointments today</span><strong>{{ appointments_today|default:0 }}</strong></li>
+						<li class="d-flex justify-content-between"><span>Pending admissions</span><strong>{{ admissions_pending|default:0 }}</strong></li>
+						<li class="d-flex justify-content-between"><span>Unread messages</span><strong>{{ unread_messages|default:0 }}</strong></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-8">
+			<div class="card">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h5 class="card-title mb-0">Recent Activity</h5>
+						<small class="text-muted">Latest system events</small>
+					</div>
+					<div class="list-group">
+						{% for ev in recent_activities %}
+							<div class="list-group-item d-flex justify-content-between align-items-start">
+								<div>
+									<div class="fw-semibold">{{ ev.title|default:ev.description|truncatechars:50 }}</div>
+									<div class="small text-muted">{{ ev.timestamp|date:'SHORT_DATETIME_FORMAT' }} — {{ ev.source|default:'System' }}</div>
+								</div>
+								<div class="text-end">
+									{% if ev.level == 'error' %}<span class="badge bg-danger">Error</span>
+									{% elif ev.level == 'warning' %}<span class="badge bg-warning text-dark">Warn</span>
+									{% else %}<span class="badge bg-success">OK</span>{% endif %}
+								</div>
+							</div>
+						{% empty %}
+							<div class="list-group-item text-center text-muted">No recent activity.</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div class="card mt-3">
+				<div class="card-body">
+					<h6 class="card-title">Contact & Settings</h6>
+					<form id="contactForm" method="post" action="#">
+						{% csrf_token %}
+						<div class="row g-3">
+							<div class="col-md-6">
+								<label class="form-label">Name</label>
+								<input name="name" type="text" class="form-control" value="{{ user.get_full_name|default:'' }}">
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Email</label>
+								<input name="email" type="email" class="form-control" value="{{ user.email|default:'' }}">
+							</div>
+							<div class="col-12">
+								<label class="form-label">Avatar</label>
+								<input id="avatarFile" name="avatar" type="file" accept="image/*" class="form-control">
+							</div>
+							<div class="col-12 text-end">
+								<button class="btn btn-primary" type="submit">Save changes</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Edit Profile Modal (same form as above, for convenience) -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Edit Profile</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="editProfileForm" method="post" action="#" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="mb-3">
+						<label class="form-label">Full name</label>
+						<input name="name" type="text" class="form-control" value="{{ user.get_full_name|default:'' }}">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Email</label>
+						<input name="email" type="email" class="form-control" value="{{ user.email|default:'' }}">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Avatar</label>
+						<input id="modalAvatarFile" name="avatar" type="file" accept="image/*" class="form-control">
+					</div>
+					<div class="text-end">
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Change Password</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form id="changePwdForm" method="post" action="#">
+					{% csrf_token %}
+					<div class="mb-2">
+						<label class="form-label">Current password</label>
+						<input name="current_password" type="password" class="form-control" required>
+					</div>
+					<div class="mb-2">
+						<label class="form-label">New password</label>
+						<input name="new_password" type="password" class="form-control" required>
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Confirm new password</label>
+						<input name="confirm_password" type="password" class="form-control" required>
+					</div>
+					<div class="text-end">
+						<button class="btn btn-primary" type="submit">Change</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+// Avatar preview for both page and modal
+(function(){
+	function handleFileInput(input, previewId){
+		if (!input) return;
+		input.addEventListener('change', function(){
+			const f = this.files && this.files[0];
+			if (!f) return;
+			const url = URL.createObjectURL(f);
+			const img = document.getElementById(previewId);
+			if (img) img.src = url;
+		});
+	}
+	handleFileInput(document.getElementById('avatarFile'), 'avatarPreview');
+	handleFileInput(document.getElementById('modalAvatarFile'), 'avatarPreview');
+})();
+</script>
+
+{% endblock %}

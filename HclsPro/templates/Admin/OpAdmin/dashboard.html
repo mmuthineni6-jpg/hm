@@ -1,0 +1,154 @@
+{% extends 'Admin/OpAdmin/oadminbase.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-3">
+	<div class="row mb-3">
+		<div class="col">
+			<h2 class="mb-0">Operational Dashboard</h2>
+			<small class="text-muted">Overview of daily operations and quick actions</small>
+		</div>
+		<div class="col-auto">
+			<a href="/opadmin/reports/" class="btn btn-sm btn-outline-secondary">Reports</a>
+		</div>
+	</div>
+
+	<div class="row g-3">
+		<div class="col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3 bg-primary text-white rounded p-2">
+						<svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/><path fill-rule="evenodd" d="M8 8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Appointments Today</div>
+						<div class="h5 mb-0">{{ appointments_today|default:0 }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3 bg-warning text-dark rounded p-2">
+						<svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a3 3 0 00-3 3v1H4a2 2 0 00-2 2v3h12V7a2 2 0 00-2-2h-1V4a3 3 0 00-3-3z"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Pending Admissions</div>
+						<div class="h5 mb-0">{{ admissions_pending|default:0 }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3 bg-success text-white rounded p-2">
+						<svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v2H2z"/><path d="M3 6h10v6H3z"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Lab Results</div>
+						<div class="h5 mb-0">{{ lab_results_pending|default:0 }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3 bg-info text-white rounded p-2">
+						<svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v10H2z"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Unread Messages</div>
+						<div class="h5 mb-0">{{ unread_messages|default:0 }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row mt-3">
+		<div class="col-lg-8">
+			<div class="card mb-3">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<h5 class="card-title mb-0">Operations Feed</h5>
+						<small class="text-muted">Latest updates</small>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-sm table-hover mb-0">
+							<thead class="table-light">
+								<tr>
+									<th>Time</th>
+									<th>Event</th>
+									<th>Source</th>
+									<th class="text-end">Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for ev in operations %}
+								<tr>
+									<td class="small text-muted">{{ ev.timestamp|date:'SHORT_DATETIME_FORMAT' }}</td>
+									<td>{{ ev.description }}</td>
+									<td class="small text-muted">{{ ev.source|default:'System' }}</td>
+									<td class="text-end">
+										{% if ev.level == 'error' %}<span class="badge bg-danger">Error</span>
+										{% elif ev.level == 'warning' %}<span class="badge bg-warning text-dark">Warning</span>
+										{% else %}<span class="badge bg-success">OK</span>{% endif %}
+									</td>
+								</tr>
+								{% empty %}
+								<tr><td colspan="4" class="text-center text-muted py-3">No operations to show.</td></tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-4">
+			<div class="card mb-3">
+				<div class="card-body">
+					<h5 class="card-title">Quick Actions</h5>
+					<div class="d-grid gap-2">
+						<a href="/opadmin/new-appointment/" class="btn btn-primary btn-sm">New Appointment</a>
+						<a href="/opadmin/admit-patient/" class="btn btn-outline-primary btn-sm">Admit Patient</a>
+						<a href="/opadmin/lab/" class="btn btn-outline-success btn-sm">Open Lab Queue</a>
+						<a href="/opadmin/messages/" class="btn btn-outline-info btn-sm">View Messages</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Activity Summary</h6>
+					<canvas id="opChart" height="180"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script>
+// Render small operations chart if Chart.js is available
+(function(){
+	const ctx = document.getElementById('opChart');
+	if (!ctx) return;
+	if (typeof Chart === 'undefined') return;
+	const labels = {{ chart_labels|default:'[]'|safe }};
+	const data = {{ chart_data|default:'[]'|safe }};
+	new Chart(ctx, {
+		type: 'bar',
+		data: { labels: labels, datasets: [{ label: 'Events', data: data, backgroundColor: 'rgba(13,110,253,0.7)' }] },
+		options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+	});
+})();
+</script>
+
+{% endblock %}

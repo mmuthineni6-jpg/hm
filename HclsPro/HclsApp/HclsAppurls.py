@@ -1,0 +1,21 @@
+from  . import views
+from django.urls import path
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('home/', views.home, name='home'),
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login, name='login'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('profile/', views.profile, name='profile'),
+    path('add/', views.add, name='add'),
+    path('manage/', views.manage, name='manage'),
+    path('OAdashboard/', views.OAdashboard, name='OAdashboard'),
+    path('OAprofile/', views.OAprofile, name='OAprofile'),
+    path('doctoradd/', views.doctoradd, name='doctoradd'),
+    path('doctormanage/', views.doctormanage, name='doctormanage'),
+    path('helperadd/', views.helperadd, name='helperadd'),  
+    path('helpermanage/', views.helpermanage, name='helpermanage'),
+    path('receptionistadd/', views.receptionistadd, name='receptionistadd'),
+    path('receptionistmanage/', views.receptionistmanage, name='receptionistmanage'),
+]

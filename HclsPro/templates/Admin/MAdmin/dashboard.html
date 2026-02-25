@@ -1,0 +1,167 @@
+{% extends 'Admin/MAdmin/mabase.html' %}
+
+{% block content %}
+
+<div class="container-fluid py-3">
+	<div class="row mb-3 align-items-center">
+		<div class="col">
+			<h2 class="mb-0">Dashboard</h2>
+			<small class="text-muted">Overview of hospital activity and quick actions</small>
+		</div>
+		<div class="col-auto">
+			<a href="/add/" class="btn btn-primary">New Record</a>
+		</div>
+	</div>
+
+	<div class="row g-3 mb-3">
+		<div class="col-6 col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="#0d6efd"/>
+							<path d="M4 20c0-4 4-6 8-6s8 2 8 6v1H4v-1z" fill="#0d6efd"/>
+						</svg>
+					</div>
+					<div>
+						<div class="small text-muted">Patients</div>
+						<div class="h4 mb-0">{{ patients_count|default:'—' }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-6 col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2a4 4 0 100 8 4 4 0 000-8zM6 20v-1a4 4 0 014-4h4a4 4 0 014 4v1" fill="#198754"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Doctors</div>
+						<div class="h4 mb-0">{{ doctors_count|default:'—' }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-6 col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Appointments</div>
+						<div class="h4 mb-0">{{ appointments_count|default:'—' }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-6 col-md-3">
+			<div class="card shadow-sm">
+				<div class="card-body d-flex align-items-center">
+					<div class="me-3">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M3 13h18v8H3zM7 13V6h10v7" fill="#6c757d"/></svg>
+					</div>
+					<div>
+						<div class="small text-muted">Staff</div>
+						<div class="h4 mb-0">{{ staff_count|default:'—' }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-8 mb-3">
+			<div class="card">
+				<div class="card-header d-flex justify-content-between align-items-center">
+					<strong>Recent Activity</strong>
+					<small class="text-muted">Last 24 hours</small>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-sm table-hover mb-0">
+						<thead class="table-light">
+							<tr>
+								<th scope="col">Time</th>
+								<th scope="col">Event</th>
+								<th scope="col">User</th>
+								<th scope="col">Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for act in recent_activities %}
+							<tr>
+								<td>{{ act.time|default:'—' }}</td>
+								<td>{{ act.message|default:'—' }}</td>
+								<td>{{ act.user|default:'System' }}</td>
+								<td><span class="badge bg-{{ act.level|default:'secondary' }}">{{ act.status|default:'info' }}</span></td>
+							</tr>
+							{% empty %}
+							<tr>
+								<td>09:12</td>
+								<td>New patient registered</td>
+								<td>reception</td>
+								<td><span class="badge bg-success">Completed</span></td>
+							</tr>
+							<tr>
+								<td>08:45</td>
+								<td>Appointment booked</td>
+								<td>john.doe</td>
+								<td><span class="badge bg-warning">Pending</span></td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-4 mb-3">
+			<div class="card mb-3">
+				<div class="card-header"><strong>Quick Actions</strong></div>
+				<div class="card-body">
+					<div class="d-grid gap-2">
+						<a href="/add/" class="btn btn-outline-primary" >Add Patient</a>
+						<a href="#" class="btn btn-outline-success">New Appointment</a>
+						<a href="#" class="btn btn-outline-secondary">Manage Doctors</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header d-flex justify-content-between align-items-center">
+					<strong>Activity Chart</strong>
+					<small class="text-muted">Weekly</small>
+				</div>
+				<div class="card-body">
+					<canvas id="activityChart" width="400" height="200" aria-label="Activity chart" role="img"></canvas>
+					<small class="text-muted d-block mt-2">Chart renders if Chart.js is available.</small>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+// Render a simple demo chart if Chart is loaded
+(function(){
+	if (typeof Chart !== 'undefined'){
+		try{
+			const ctx = document.getElementById('activityChart').getContext('2d');
+			new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+					datasets: [{ label: 'Appointments', data: [12,19,8,14,20,9,7], borderColor:'#0d6efd', backgroundColor:'rgba(13,110,253,0.1)' }]
+				},
+				options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+			});
+		}catch(e){console.warn('Chart render failed', e)}
+	}
+})();
+</script>
+
+{% endblock %}

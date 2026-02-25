@@ -1,0 +1,10 @@
+/* Minimal admin overrides to avoid 404s from templates referencing admin.css */
+/* You can expand this file with project-specific styles */
+@import url('bootstrap.css');
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  background-color: #ffffff;
+}
+
+.small-muted { color: #6c757d; }

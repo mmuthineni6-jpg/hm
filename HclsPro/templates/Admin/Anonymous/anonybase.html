@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="icon" href="{% static 'images/hlogo2.png' %}" type="image/png">
+    
+    {% block extra_head %}{% endblock %}
+</head> 
+<body>
+    <!-- Header Starts-->
+    <header>
+        <div class="row">
+            <div class="col-sm-1">
+                <a href="{% url 'home' %}"><img src="{% static 'images/hospitallogo.png' %}" alt="Logo" width="100px" height="100px"></a>
+            </div>
+            <div class="col-sm-11">
+                <h1 style="margin-left: 100px; margin-top: 20px;">HCLSDB - Hospital Management System Admin Panel</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white " style="font-size: 20px;" href="{% url 'home' %}">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" style="font-size: 20px;" href="{% url 'login' %}">Login</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" style="font-size: 20px;" href="{% url 'signup' %}">Signup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" style="font-size: 20px;" href="#">AboutUs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" style="font-size: 20px;" href="#">ContactUs</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    </header>
+    <hr />
+</body>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <hr/>
+    <!-- FOOTER -->
+            <footer class="bg-dark text-white py-3">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                    <div class="small">
+                        &copy; {{ year|default:2026 }} HCLSDB App. All rights reserved.
+                    </div>
+
+                    <div class="small">
+                        <a href="#" class="text-white text-decoration-none me-3">About</a>
+                        <a href="#" class="text-white text-decoration-none me-3">Privacy</a>
+                        <a href="#" class="text-white text-decoration-none">Contact</a>
+                    </div>
+
+                    <div>
+                        <a href="#"><img src="{% static 'images/facebook.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/twitter.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/instagram.png' %}" width="22" height="22"></a>
+                        <a href="#"><img src="{% static 'images/linkedin.png' %}" width="22" height="22"></a>
+                    </div>
+
+                </div>
+            </footer>

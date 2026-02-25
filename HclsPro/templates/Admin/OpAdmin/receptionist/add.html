@@ -1,0 +1,66 @@
+{% extends 'Admin/OpAdmin/oadminbase.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:history.back()">Back</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Add Receptionist</li>
+    </ol>
+</nav>
+
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-3">Add Receptionist</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="add-receptionist-form" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="id_name" name="name" placeholder="Full name" required value="{{ name|default:'' }}">
+                    {% if errors.name %}
+                        <div class="invalid-feedback d-block">{{ errors.name }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_phone" class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="id_phone" name="phone" inputmode="tel" pattern="^[0-9\-\+\s()]+$" placeholder="+91 555 555 5555" required value="{{ phone|default:'' }}">
+                    <div class="form-text">Allowed: numbers, spaces, +, -, parentheses.</div>
+                    {% if errors.phone %}
+                        <div class="invalid-feedback d-block">{{ errors.phone }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" id="submit-btn" style="margin-right: 10px;">Add Receptionist</button>
+                    <a class="btn btn-danger" href="javascript:history.back()">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        const form = document.getElementById('add-receptionist-form');
+        const submit = document.getElementById('submit-btn');
+        if(!form) return;
+
+        form.addEventListener('submit', function(e){
+            if (!form.checkValidity()) {
+                return;
+            }
+            submit.disabled = true;
+            submit.textContent = 'Adding...';
+        });
+    })();
+</script>
+{% endblock %}

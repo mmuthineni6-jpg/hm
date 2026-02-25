@@ -1,0 +1,57 @@
+{% extends 'Admin/OpAdmin/oadminbase.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus-fill me-2"></i>
+                        Add Doctor
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label class="form-label">Doctor Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter doctor name" required>
+                        </div>
+
+                        <!-- Specialization -->
+                        <div class="mb-3">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" name="specialization" class="form-control" placeholder="Enter specialization" required>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="phone" class="form-control" placeholder="Enter phone number" required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Add Doctor
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

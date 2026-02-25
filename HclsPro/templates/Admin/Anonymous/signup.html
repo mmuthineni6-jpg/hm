@@ -1,0 +1,107 @@
+{% extends 'Admin/Anonymous/anonybase.html' %}
+{% load static %}
+
+{% block title %}Sign Up - Admin Panel{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">Create your HCLSDB account</h3>
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger" role="alert">Please fix the errors below.</div>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'signup' %}" id="signupForm" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ request.POST.email|default:'' }}" required autocomplete="email">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="{{ request.POST.username|default:'' }}" required autocomplete="username">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone (optional)</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ request.POST.phone|default:'' }}" inputmode="tel" placeholder="+1 555 555 5555">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password" required aria-describedby="pwdHelp">
+                                    <button type="button" class="btn btn-outline-secondary" id="togglePwd">Show</button>
+                                </div>
+                                <div id="pwdHelp" class="form-text">Minimum 8 characters. Use letters, numbers, and symbols for a stronger password.</div>
+                                <div class="progress mt-2" style="height:8px;"><div id="pwdStrength" class="progress-bar" role="progressbar" style="width:0%"></div></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms</a>.</label>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg" id="signupBtn">Create account</button>
+                            </div>
+
+                            <div class="text-center small">Already have an account? <a href="{% url 'login' %}">Sign in</a></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const pwd = document.getElementById('password');
+            const toggle = document.getElementById('togglePwd');
+            const strength = document.getElementById('pwdStrength');
+            const confirm = document.getElementById('confirm_password');
+            const form = document.getElementById('signupForm');
+            const btn = document.getElementById('signupBtn');
+
+            function scorePassword(s){
+                let score = 0;
+                if (!s) return 0;
+                if (s.length >= 8) score += 25;
+                if (/[A-Z]/.test(s)) score += 20;
+                if (/[0-9]/.test(s)) score += 20;
+                if (/[^A-Za-z0-9]/.test(s)) score += 35;
+                return Math.min(score,100);
+            }
+
+            if (toggle && pwd) toggle.addEventListener('click', ()=>{
+                const t = pwd.getAttribute('type') === 'password' ? 'text' : 'password';
+                pwd.setAttribute('type', t); toggle.textContent = t === 'password' ? 'Show' : 'Hide';
+            });
+
+            if (pwd && strength) pwd.addEventListener('input', ()=>{
+                const s = scorePassword(pwd.value);
+                strength.style.width = s + '%';
+                strength.className = 'progress-bar ' + (s < 40 ? 'bg-danger' : s < 75 ? 'bg-warning' : 'bg-success');
+            });
+
+            if (form) {
+                form.addEventListener('submit', function(e){
+                    if (!form.checkValidity()) { form.classList.add('was-validated'); e.preventDefault(); e.stopPropagation(); return; }
+                    if (pwd.value !== confirm.value) { e.preventDefault(); e.stopPropagation(); alert('Passwords do not match'); return; }
+                    btn.disabled = true; btn.textContent = 'Creating...';
+                });
+            }
+        })();
+    </script>
+{% endblock %}

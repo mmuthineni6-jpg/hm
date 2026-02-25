@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Opertaional Admin - HCLSDB</title>
+    {% block extra_head %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="icon" href="{% static 'images/hlogo2.png' %}" type="image/png">
+</head>
+<body>
+
+<table border="1" width="100%" height="600px">
+    <tr>
+        <!-- LEFT NAV -->
+        <td class="bg-dark" width="20%" valign="top" style="padding-left: 20px;">
+            <h2 class="text-white text-center">HCLSDB Managerial Admin</h2>
+            <hr>
+            <p><a href="{% url 'dashboard' %}">Dashboard</a></p>
+            <p><a href="{% url 'profile' %}">Admin Profiles</a></p>
+            <p><a href="{% url 'manage' %}">Manage Admin</a></p>
+            <p><a href="{% url 'add' %}">Add Admin</a></p>
+        </td>
+
+        <!-- RIGHT SIDE -->
+        <td width="80%" valign="top">
+
+                        <header class="py-3 border-bottom">
+                            <div class="container-fluid">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <a href="{% url 'home' %}" class="me-3">
+                                            <img src="{% static 'images/hospitallogo.png' %}" alt="Logo" width="72" height="72">
+                                        </a>
+                                        <div>
+                                            <div class="small text-muted">Welcome back</div>
+                                            <div class="h5 mb-0">Hi,
+                                                {% if admin_name %}
+                                                    {{ admin_name }}
+                                                {% elif request.user.is_authenticated %}
+                                                    {{ request.user.get_full_name|default:request.user.username }}
+                                                {% else %}
+                                                    Guest
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="text-end">
+                                            <div id="headerTime" class="fw-semibold"></div>
+                                            <div class="small text-muted">Local time</div>
+                                        </div>
+
+                                        <form method="post" action="#">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger" style="padding-left: 20px;">Logout</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                (function(){
+                                    function pad(n){return n<10? '0'+n : n}
+                                    function update(){
+                                        const el = document.getElementById('headerTime');
+                                        if (!el) return;
+                                        const d = new Date();
+                                        let hours = d.getHours();
+                                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                                        let hours12 = hours % 12;
+                                        hours12 = hours12 ? hours12 : 12; // convert 0 -> 12
+                                        const t = pad(hours12) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + ' ' + ampm;
+                                        el.textContent = t;
+                                    }
+                                    update(); setInterval(update, 1000);
+                                })();
+                            </script>
+                        </header>
+
+            <!-- MAIN CONTENT -->
+            {% block content %}
+            {% endblock %}
+
+                        <hr>
+
+                        <footer class="bg-dark text-white py-3">
+                            <div class="container-fluid">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                                    <div class="small mb-2 mb-md-0">&copy; {{ year|default:2026 }} HCLSDB App. All rights reserved.</div>
+
+                                    <div class="small mb-2 mb-md-0">
+                                        <a href="#" class="text-white text-decoration-none me-3">About</a>
+                                        <a href="#" class="text-white text-decoration-none me-3">Privacy</a>
+                                        <a href="#" class="text-white text-decoration-none">Contact</a>
+                                    </div>
+
+                                    <div>
+                                        <a href="#" class="text-white me-2" aria-label="Facebook"><img src="{% static 'Images/facebook.png' %}" alt="Facebook" width="22" height="22"></a>
+                                        <a href="#" class="text-white me-2" aria-label="Twitter"><img src="{% static 'Images/twitter.png' %}" alt="Twitter" width="22" height="22"></a>
+                                        <a href="#" class="text-white me-2" aria-label="Instagram"><img src="{% static 'Images/instagram.png' %}" alt="Instagram" width="22" height="22"></a>
+                                        <a href="#" class="text-white" aria-label="LinkedIn"><img src="{% static 'Images/linkedin.png' %}" alt="LinkedIn" width="22" height="22"></a>
+                                    </div>
+                                </div>
+                                {% block footer %}{% endblock %}
+                            </div>
+                        </footer>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
