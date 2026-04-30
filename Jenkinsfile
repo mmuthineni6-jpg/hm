@@ -24,13 +24,13 @@ pipeline {
 
         stage('Tag Image') {
             steps {
-                sh "docker tag python-app:v${BUILD_NUMBER} vineethmathangi95/python:hms-v${BUILD_NUMBER}"
+                sh "docker tag python-app:v${BUILD_NUMBER} shanker25/python:hms-v${BUILD_NUMBER}"
             }
         }
 
         stage('Push Image') {
             steps {
-                sh "docker push vineethmathangi95/python:hms-v${BUILD_NUMBER}"
+                sh "docker push shanker25/python:hms-v${BUILD_NUMBER}"
             }
         }
     }
